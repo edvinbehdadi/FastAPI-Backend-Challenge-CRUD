@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: iot_sensors_db
+    environment:
+      POSTGRES_USER: iot_user
+      POSTGRES_PASSWORD: 1245
+      POSTGRES_DB: iot_sensors
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U iot_user -d iot_sensors"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: .
+    container_name: iot_sensors_api
+    environment:
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_NAME: iot_sensors
+      DATABASE_USER: iot_user
+      DATABASE_PASSWORD: 1245
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/app
+    command: >
+      sh -c "
+        echo '⏳ Waiting for database...' &&
+        sleep 5 &&
+        echo '📦 Running migrations...' &&
+        alembic upgrade head &&
+        echo '🌱 Initializing sample data...' &&
+        python scripts/init_sample_data.py &&
+        echo '🚀 Starting API server...' &&
+        uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+      "
+
+volumes:
+  postgres_data:

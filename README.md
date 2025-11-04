@@ -89,7 +89,7 @@ FastAPI-Backend-Challenge-CRUD/
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/edvinbehdadi/FastAPI-Backend-Challenge-CRUD.git
 cd FastAPI-Backend-Challenge-CRUD
 ```
 

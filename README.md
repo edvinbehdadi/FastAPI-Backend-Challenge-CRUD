@@ -867,9 +867,6 @@ docker-compose logs db
 docker-compose exec api bash
 ```
 
-## 📄 License
-
-This project is developed as a technical assessment for recruitment purposes.
 
 ## 👨‍💻 Author
 

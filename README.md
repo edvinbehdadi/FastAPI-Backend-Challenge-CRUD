@@ -665,42 +665,6 @@ class UnitService:
         return Unit(**unit_data)
 ```
 
-### SOLID Principles
-
-**Single Responsibility Principle (SRP)**:
-- Each class has one reason to change
-- Repositories: data access only
-- Services: business logic only
-- Routes: HTTP handling only
-
-**Open/Closed Principle (OCP)**:
-- Base repository provides common functionality
-- Extended without modifying base
-
-**Liskov Substitution Principle (LSP)**:
-- All repositories follow the same contract
-- Interchangeable implementations
-
-**Interface Segregation Principle (ISP)**:
-- Focused interfaces
-- No unnecessary methods
-
-**Dependency Inversion Principle (DIP)**:
-- High-level modules don't depend on low-level modules
-- Both depend on abstractions
-
-### Exception Handling
-
-Custom exceptions for different error scenarios:
-
-```python
-NotFoundException       # 404 - Resource not found
-BadRequestException     # 400 - Invalid request
-ValidationException     # 422 - Validation error
-ConflictException      # 409 - Conflict (duplicate, etc.)
-DatabaseException      # 500 - Database error
-InternalServerException # 500 - Unexpected error
-```
 
 ## 🔧 Configuration
 
@@ -715,18 +679,6 @@ DATABASE_PORT=5432
 DATABASE_NAME=iot_sensors
 DATABASE_USER=iot_user
 DATABASE_PASSWORD=your_password_here
-```
-
-### Docker Environment
-
-For Docker, the database host is `db` (service name):
-
-```env
-DATABASE_HOST=db
-DATABASE_PORT=5432
-DATABASE_NAME=iot_sensors
-DATABASE_USER=iot_user
-DATABASE_PASSWORD=1245
 ```
 
 ### Configuration Files
@@ -817,63 +769,6 @@ Provides comprehensive statistics for a unit:
 }
 ```
 
-**Use Cases**:
-- Dashboard visualization
-- System health monitoring
-- Capacity planning
-- Performance analysis
-
-## 🔒 Production Considerations
-
-### Security:
-- [ ] Add authentication (JWT, OAuth2)
-- [ ] Implement authorization (RBAC)
-- [ ] Use HTTPS/TLS
-- [ ] Add rate limiting
-- [ ] Sanitize inputs
-- [ ] Use secrets management (AWS Secrets Manager, Vault)
-- [ ] Enable CORS properly
-- [ ] Add security headers
-
-### Performance:
-- [ ] Add Redis caching
-- [ ] Optimize database indexes
-- [ ] Implement connection pooling limits
-- [ ] Add request/response compression
-- [ ] Use CDN for static assets
-- [ ] Implement pagination everywhere
-- [ ] Add query optimization
-- [ ] Use database read replicas
-
-### Monitoring:
-- [ ] Add structured logging (JSON)
-- [ ] Implement health checks (`/health`, `/ready`)
-- [ ] Add metrics collection (Prometheus)
-- [ ] Set up alerting (PagerDuty, Slack)
-- [ ] Add APM (Application Performance Monitoring)
-- [ ] Track error rates
-- [ ] Monitor response times
-- [ ] Log slow queries
-
-### Reliability:
-- [ ] Add retry logic with exponential backoff
-- [ ] Implement circuit breakers
-- [ ] Add request timeouts
-- [ ] Set up automated database backups
-- [ ] Implement graceful shutdown
-- [ ] Add health check endpoints
-- [ ] Use blue-green deployments
-- [ ] Set up disaster recovery
-
-### DevOps:
-- [ ] Set up CI/CD pipeline
-- [ ] Automate testing
-- [ ] Container orchestration (Kubernetes)
-- [ ] Infrastructure as Code (Terraform)
-- [ ] Automated scaling
-- [ ] Log aggregation (ELK, Splunk)
-- [ ] Secret rotation
-- [ ] Automated rollbacks
 
 ## 🐛 Troubleshooting
 
@@ -975,16 +870,6 @@ alembic downgrade base
 alembic upgrade head
 ```
 
-### Debug Mode:
-
-Enable detailed logging:
-
-```python
-# In app/main.py
-import logging
-logging.basicConfig(level=logging.DEBUG)
-```
-
 ### Getting Help:
 
 1. Check application logs:
@@ -1021,7 +906,5 @@ This project is developed as a technical assessment for recruitment purposes.
 - pytest
 
 ---
-
-
 
 **Note**: This is a demonstration project showcasing clean architecture, best practices, and production-ready code structure. All sample data is fictional and for demonstration purposes only.

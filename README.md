@@ -1022,14 +1022,6 @@ This project is developed as a technical assessment for recruitment purposes.
 
 ---
 
-## 📞 Contact & Support
 
-For questions, issues, or contributions:
-
-- **Documentation**: http://localhost:8000/docs (when running)
-- **Issues**: [Report an issue](#)
-- **Email**: [contact@example.com](#)
-
----
 
 **Note**: This is a demonstration project showcasing clean architecture, best practices, and production-ready code structure. All sample data is fictional and for demonstration purposes only.

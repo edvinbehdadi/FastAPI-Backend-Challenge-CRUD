@@ -23,7 +23,7 @@ A production-ready REST API for managing IoT sensors and their data, built with 
 ```
 FastAPI-Backend-Challenge-CRUD/
 ├── app/
-│   ├── api/                          # API endpoints (routes)
+│   ├── routers/                          # API endpoints (routes)
 │   │   ├── __init__.py
 │   │   ├── units.py                  # Unit endpoints
 │   │   ├── sensors.py                # Sensor endpoints

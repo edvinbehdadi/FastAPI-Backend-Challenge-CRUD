@@ -300,26 +300,6 @@ This API is fully documented using **OpenAPI 3.0** specification with comprehens
    - Import into Postman, Insomnia, or other tools
    - Generate client SDKs in any language
 
-### Documentation Features:
-
-- ✅ Comprehensive endpoint descriptions
-- ✅ Request/response schemas with examples
-- ✅ HTTP status codes documentation (200, 201, 404, 422, 500)
-- ✅ Parameter descriptions and validation rules
-- ✅ Model schemas with field descriptions
-- ✅ Enum values and their meanings
-- ✅ Interactive testing capability
-- ✅ Error response examples
-
-### Using Swagger UI:
-
-1. Navigate to http://localhost:8000/docs
-2. Browse available endpoints organized by tags (units, sensors, sensor-data)
-3. Click on any endpoint to expand details
-4. Click "Try it out" to test the endpoint
-5. Fill in parameters and request body (examples provided)
-6. Click "Execute" to send the request
-7. View the response with status code and data
 
 ### API Examples in Documentation:
 
@@ -896,15 +876,5 @@ This project is developed as a technical assessment for recruitment purposes.
 **Developed by:** Edvin ‌Behdadi
 
 **Project Type:** FastAPI Backend Challenge - IoT Sensors Management System
-
-**Technologies Used:**
-- FastAPI
-- PostgreSQL
-- asyncpg
-- Alembic
-- Docker
-- pytest
-
----
 
 **Note**: This is a demonstration project showcasing clean architecture, best practices, and production-ready code structure. All sample data is fictional and for demonstration purposes only.

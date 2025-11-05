@@ -107,8 +107,6 @@ docker-compose up --build
 4. The API will be available at:
    - **API**: http://localhost:8000
    - **Interactive docs (Swagger)**: http://localhost:8000/docs
-   - **Alternative docs (ReDoc)**: http://localhost:8000/redoc
-   - **OpenAPI Schema**: http://localhost:8000/openapi.json
 
 **Note:** On first startup, the application will automatically:
 - Create database tables via Alembic migrations
@@ -179,67 +177,6 @@ python scripts/init_sample_data.py
 uvicorn app.main:app --reload
 ```
 
-## 📊 Database Schema
-
-### Units Table
-Physical locations or organizational units where sensors are deployed.
-
-```sql
-CREATE TABLE units (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    location VARCHAR(500) NOT NULL,
-    description TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-**Purpose**: Represent facilities like factories, warehouses, or buildings.
-
-### Sensors Table
-IoT sensors attached to units for data collection.
-
-```sql
-CREATE TYPE sensor_type_enum AS ENUM (
-    'temperature', 'humidity', 'pressure', 
-    'motion', 'light', 'sound'
-);
-
-CREATE TYPE sensor_status_enum AS ENUM (
-    'active', 'inactive', 'maintenance'
-);
-
-CREATE TABLE sensors (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    sensor_type sensor_type_enum NOT NULL,
-    unit_id INTEGER NOT NULL REFERENCES units(id) ON DELETE CASCADE,
-    status sensor_status_enum NOT NULL DEFAULT 'active',
-    description TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-**Purpose**: Track individual sensors and their operational status.
-
-### Sensor Data Table
-Data readings collected from sensors.
-
-```sql
-CREATE TYPE data_status_enum AS ENUM (
-    'pending', 'validated', 'archived', 'invalid'
-);
-
-CREATE TABLE sensor_data (
-    id SERIAL PRIMARY KEY,
-    sensor_id INTEGER NOT NULL REFERENCES sensors(id) ON DELETE CASCADE,
-    value DOUBLE PRECISION NOT NULL,
-    unit VARCHAR(50),
-    status data_status_enum NOT NULL DEFAULT 'pending',
-    timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-```
-
 **Purpose**: Store time-series data from sensors with validation workflow.
 
 ## 🔌 API Endpoints
@@ -289,18 +226,6 @@ This API is fully documented using **OpenAPI 3.0** specification with comprehens
    - Test different scenarios with pre-filled examples
    - View all schemas and models with descriptions
 
-2. **ReDoc** (Alternative): http://localhost:8000/redoc
-   - Clean, readable documentation
-   - Better for reading and understanding API structure
-   - Detailed descriptions and examples
-   - Mobile-friendly interface
-
-3. **OpenAPI JSON**: http://localhost:8000/openapi.json
-   - Raw OpenAPI specification
-   - Import into Postman, Insomnia, or other tools
-   - Generate client SDKs in any language
-
-
 ### API Examples in Documentation:
 
 Each endpoint includes pre-filled examples:
@@ -348,135 +273,6 @@ The sample data demonstrates a complete IoT monitoring scenario:
 3. **Validation**: Admin reviews and validates data
 4. **Archival**: Old validated data is archived
 
-### Reinitializing Sample Data:
-
-```bash
-# Stop and remove containers including volumes
-docker-compose down -v
-
-# Rebuild and start (will reinitialize data)
-docker-compose up --build
-```
-
-### Manual Sample Data Initialization:
-
-```bash
-# With Docker
-docker-compose exec api python scripts/init_sample_data.py
-
-# Locally
-python scripts/init_sample_data.py
-```
-
-**Note:** The initialization script is idempotent - it checks if data exists and won't duplicate entries.
-
-## 📝 API Usage Examples
-
-### Create a Unit
-```bash
-curl -X POST "http://localhost:8000/api/units/" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Factory A",
-    "location": "Building 1, Floor 2",
-    "description": "Main production unit"
-  }'
-```
-
-**Response:**
-```json
-{
-  "id": 1,
-  "name": "Factory A",
-  "location": "Building 1, Floor 2",
-  "description": "Main production unit",
-  "created_at": "2025-01-15T10:30:00Z"
-}
-```
-
-### Create a Sensor
-```bash
-curl -X POST "http://localhost:8000/api/sensors/" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Temperature Sensor 1",
-    "sensor_type": "temperature",
-    "unit_id": 1,
-    "status": "active",
-    "description": "Monitors room temperature"
-  }'
-```
-
-**Available Sensor Types:**
-- `temperature` - Temperature sensors
-- `humidity` - Humidity sensors
-- `pressure` - Pressure sensors
-- `motion` - Motion detectors
-- `light` - Light sensors
-- `sound` - Sound level meters
-
-### Create Sensor Data
-```bash
-curl -X POST "http://localhost:8000/api/sensor-data/" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "sensor_id": 1,
-    "value": 23.5,
-    "unit": "celsius",
-    "status": "pending"
-  }'
-```
-
-### Validate Sensor Data
-```bash
-curl -X PUT "http://localhost:8000/api/sensor-data/1/validate" \
-  -H "Content-Type: application/json"
-```
-
-### Archive Sensor Data
-```bash
-curl -X PUT "http://localhost:8000/api/sensor-data/1/archive" \
-  -H "Content-Type: application/json"
-```
-
-### Get Unit Statistics
-```bash
-curl "http://localhost:8000/api/units/1/statistics"
-```
-
-**Response:**
-```json
-{
-  "unit_id": 1,
-  "unit_name": "Factory A",
-  "total_sensors": 5,
-  "active_sensors": 4,
-  "inactive_sensors": 1,
-  "total_data_points": 1250,
-  "latest_data_timestamp": "2025-01-15T14:30:00Z"
-}
-```
-
-### Get Sensors with Filtering
-```bash
-# Get all sensors for a specific unit
-curl "http://localhost:8000/api/sensors/?unit_id=1"
-
-# Get paginated results
-curl "http://localhost:8000/api/sensors/?skip=0&limit=10"
-```
-
-### Get Sensor Data with Filtering
-```bash
-# Get all data for a specific sensor
-curl "http://localhost:8000/api/sensor-data/?sensor_id=1"
-
-# Get only validated data
-curl "http://localhost:8000/api/sensor-data/?status=validated"
-
-# Get data with sensor and unit details
-curl "http://localhost:8000/api/sensor-data/?with_details=true"
-```
 
 ## 🧪 Running Tests
 
@@ -531,16 +327,6 @@ open htmlcov/index.html  # On macOS
 xdg-open htmlcov/index.html  # On Linux
 ```
 
-### Test Output Example:
-```
-tests/test_units.py::test_create_unit PASSED           [ 14%]
-tests/test_units.py::test_get_unit PASSED              [ 28%]
-tests/test_units.py::test_update_unit PASSED           [ 42%]
-tests/test_sensors.py::test_create_sensor PASSED       [ 57%]
-tests/test_sensor_data.py::test_validate_data PASSED   [ 71%]
-...
-======================== 38 passed in 2.45s =========================
-```
 
 ## 🗄️ Database Migrations
 
@@ -678,55 +464,9 @@ DATABASE_PASSWORD=your_password_here
 - **Uvicorn**: ASGI server
 - **python-dotenv**: Environment variables
 
-### Development Dependencies:
-- **Alembic**: Database migrations
-- **pytest**: Testing framework
-- **pytest-asyncio**: Async test support
-- **httpx**: HTTP client for testing
-
 ### Full Requirements:
 See `requirements.txt` for complete list with versions.
 
-## 🐳 Docker Configuration
-
-### Services:
-
-**Database (PostgreSQL 15)**:
-- Image: `postgres:15-alpine`
-- Port: 5432
-- Persistent volume for data
-- Health checks enabled
-
-**API (FastAPI)**:
-- Built from `Dockerfile`
-- Port: 8000
-- Auto-reload enabled
-- Depends on database health
-
-### Docker Commands:
-
-```bash
-# Build and start all services
-docker-compose up --build
-
-# Start in detached mode
-docker-compose up -d
-
-# View logs
-docker-compose logs -f
-
-# Stop all services
-docker-compose down
-
-# Stop and remove volumes (reset database)
-docker-compose down -v
-
-# Execute command in container
-docker-compose exec api bash
-
-# Run tests
-docker-compose exec api pytest
-```
 
 ## 📈 Statistics & Monitoring
 
@@ -796,75 +536,6 @@ sudo apt install libpq-dev python3-dev
 
 # Or use binary version
 pip install psycopg2-binary
-```
-
-#### 4. Docker Build Issues
-
-**Error**: `failed to compute cache key`
-
-**Solution**:
-```bash
-# Clear Docker cache
-docker-compose down
-docker system prune -a
-docker-compose build --no-cache
-```
-
-#### 5. Database Connection Issues
-
-**Error**: `could not connect to server`
-
-**Solution**:
-```bash
-# Check if PostgreSQL is running
-sudo systemctl status postgresql
-
-# Start PostgreSQL
-sudo systemctl start postgresql
-
-# Test connection
-psql -U iot_user -d iot_sensors -h localhost
-
-# Check Docker network
-docker network ls
-docker network inspect <network_name>
-```
-
-#### 6. Migration Issues
-
-**Error**: `target database is not up to date`
-
-**Solution**:
-```bash
-# Check current version
-alembic current
-
-# View history
-alembic history
-
-# Stamp current version
-alembic stamp head
-
-# Or downgrade and upgrade
-alembic downgrade base
-alembic upgrade head
-```
-
-### Getting Help:
-
-1. Check application logs:
-```bash
-docker-compose logs api
-```
-
-2. Check database logs:
-```bash
-docker-compose logs db
-```
-
-3. Access container shell:
-```bash
-docker-compose exec api bash
 ```
 
 

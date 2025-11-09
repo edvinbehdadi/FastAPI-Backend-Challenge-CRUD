@@ -95,8 +95,14 @@ cd FastAPI-Backend-Challenge-CRUD
 
 2. Create environment file:
 ```bash
+# Linux/macOS
 cp .env.example .env
-# Edit .env if needed (default values work with Docker)
+
+# Windows (Command Prompt)
+copy .env.example .env
+
+# Windows (PowerShell)
+Copy-Item .env.example .env
 ```
 
 3. Start the application:
@@ -122,8 +128,17 @@ docker-compose up --build
 
 1. Create a virtual environment:
 ```bash
+# Linux/macOS
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate
+
+# Windows (Command Prompt)
+python -m venv venv
+venv\Scripts\activate.bat
+
+# Windows (PowerShell)
+python -m venv venv
+venv\Scripts\Activate.ps1
 ```
 
 2. Install dependencies:
@@ -132,6 +147,8 @@ pip install -r requirements.txt
 ```
 
 3. Install and setup PostgreSQL:
+
+**Linux:**
 ```bash
 # Install PostgreSQL
 sudo apt update
@@ -153,9 +170,34 @@ GRANT ALL PRIVILEGES ON DATABASE iot_sensors TO iot_user;
 \q
 ```
 
+**Windows:**
+```powershell
+# Download and install PostgreSQL from:
+# https://www.postgresql.org/download/windows/
+
+# After installation, open pgAdmin or psql:
+psql -U postgres
+
+# In PostgreSQL shell:
+CREATE DATABASE iot_sensors;
+CREATE USER iot_user WITH PASSWORD 'your_password';
+ALTER DATABASE iot_sensors OWNER TO iot_user;
+ALTER SCHEMA public OWNER TO iot_user;
+GRANT ALL PRIVILEGES ON DATABASE iot_sensors TO iot_user;
+\q
+```
+
 4. Configure environment variables:
 ```bash
+# Linux/macOS
 cp .env.example .env
+
+# Windows (Command Prompt)
+copy .env.example .env
+
+# Windows (PowerShell)
+Copy-Item .env.example .env
+
 # Edit .env with your database credentials:
 # DATABASE_HOST=localhost
 # DATABASE_USER=iot_user
@@ -307,8 +349,14 @@ docker-compose exec api pytest --cov=app --cov-report=html
 
 #### Locally:
 ```bash
-# Activate virtual environment
+# Linux/macOS
 source venv/bin/activate
+
+# Windows (Command Prompt)
+venv\Scripts\activate.bat
+
+# Windows (PowerShell)
+venv\Scripts\Activate.ps1
 
 # Run all tests
 pytest
@@ -322,9 +370,12 @@ pytest tests/test_units.py
 # Run with coverage
 pytest --cov=app --cov-report=html
 
-# View coverage report
-open htmlcov/index.html  # On macOS
-xdg-open htmlcov/index.html  # On Linux
+# View coverage report (Linux/macOS)
+open htmlcov/index.html  # macOS
+xdg-open htmlcov/index.html  # Linux
+
+# View coverage report (Windows)
+start htmlcov/index.html
 ```
 
 
@@ -500,7 +551,16 @@ Provides comprehensive statistics for a unit:
 
 **Solution**:
 ```bash
+# Linux
 sudo -u postgres psql
+\c iot_sensors
+ALTER DATABASE iot_sensors OWNER TO iot_user;
+ALTER SCHEMA public OWNER TO iot_user;
+GRANT ALL ON SCHEMA public TO iot_user;
+\q
+
+# Windows (Run as Administrator in pgAdmin or psql)
+psql -U postgres
 \c iot_sensors
 ALTER DATABASE iot_sensors OWNER TO iot_user;
 ALTER SCHEMA public OWNER TO iot_user;
@@ -514,11 +574,13 @@ GRANT ALL ON SCHEMA public TO iot_user;
 
 **Solution**:
 ```bash
-# Find process using port 5432
+# Linux
 sudo lsof -i :5432
-
-# Kill the process
 sudo kill -9 <PID>
+
+# Windows (Command Prompt - Run as Administrator)
+netstat -ano | findstr :5432
+taskkill /PID <PID> /F
 
 # Or change port in docker-compose.yml
 ports:
@@ -531,10 +593,11 @@ ports:
 
 **Solution**:
 ```bash
-# Install PostgreSQL development packages
+# Linux
 sudo apt install libpq-dev python3-dev
 
-# Or use binary version
+# Windows
+# Use binary version instead
 pip install psycopg2-binary
 ```
 
